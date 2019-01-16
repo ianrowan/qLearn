@@ -6,6 +6,7 @@ class Qubit:
     def __init__(self):
         self.position = np.asarray([[1.0],
                                     [0.0]])
+        self.entangled_with = object
 
     def measure(self):
 
@@ -16,6 +17,9 @@ class Qubit:
 
     def superposition(self):
         return self.position
+
+    def entangle(self, q):
+        self.entangled_with = q
 
     def X(self):
         gate = np.asarray([[0, 1],
@@ -36,18 +40,3 @@ class Qubit:
         gate = np.asarray([[np.cos(theta/2), -np.sin(theta/2)],
                            [np.sin(theta/2), np.cos(theta/2)]])
         self.position = np.matmul(gate, self.position)
-
-
-
-CNOT = np.asarray([[1,0,0,0], [0,1,0,0], [0,0,0,1], [0,0,1,0]])
-
-q1 = Qubit()
-q1.H()
-q1.Ry(1.0)
-q1 = q1.superposition()
-q2 = Qubit().superposition()
-
-tensor = [j[0]*i[0] for j in q1 for i in q2]
-entangle = np.matmul(CNOT, np.asarray(tensor).transpose())
-print(tensor)
-print(entangle)

@@ -1,6 +1,6 @@
 import numpy as np
 import math
-from Qubit import Qubit
+from core.Qubit import Qubit
 
 def tensor_product_simple(q1, q2):
     try:
@@ -23,6 +23,20 @@ def tensor_product(*args):
             t_product[:int(math.pow(2, k+1))] = __product(t_product[:int(math.pow(2, k))], args[k].superposition())
     return t_product
 
+def CNOT(q1, q2):
+    gate = np.asarray([[1, 0, 0, 0],
+                       [0, 1, 0, 0],
+                       [0, 0, 0, 1],
+                       [0, 0, 1, 0]])
+    q_system = tensor_product_simple(q1, q2)
+    #Todo: log/track entangelment
+    #q1.entangle(q2)
+    #q2.entangle(q1)
+
+    return np.matmul(gate, q_system)
+
+
+
 
 q1 = Qubit()
 q1.H()
@@ -30,9 +44,9 @@ print(q1.superposition())
 q2 = Qubit()
 q2.H()
 q3 = Qubit()
-q3.H()
+print(CNOT(q2, q3))
 
-print(tensor_product(q1, q2, q3))
+#print(tensor_product(q1, q2, q3))
 x = []
 for i in range(25):
     q = Qubit()
@@ -40,7 +54,7 @@ for i in range(25):
         q.X()
     q.H()
     x.append(q)
-print(tensor_product(x))
+#print(tensor_product(x))
 
 
 
