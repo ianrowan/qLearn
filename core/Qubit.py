@@ -6,7 +6,7 @@ class Qubit:
     def __init__(self):
         self.position = np.asarray([[1.0],
                                     [0.0]])
-        self.entangled_with = object
+        self.entangled_with = 0
 
     def measure(self):
 
@@ -14,6 +14,9 @@ class Qubit:
             i[0] = int(i[0] == max(self.position))
 
         return self.position
+
+    def is_entangled(self):
+        return self.entangled_with
 
     def superposition(self):
         return self.position

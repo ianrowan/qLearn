@@ -30,12 +30,27 @@ def CNOT(q1, q2):
                        [0, 0, 1, 0]])
     q_system = tensor_product_simple(q1, q2)
     #Todo: log/track entangelment
-    #q1.entangle(q2)
-    #q2.entangle(q1)
+    q1.entangled_with = id(q2)
+    q2.entangled_With = id(q1)
 
     return np.matmul(gate, q_system)
 
+def are_entangled(q1, q2):
+    return q1.is_entangled() == id(q2)
 
+def system_elements_entangled(*args):
+    if type(args[0]) == list:
+        args = args[0]
+    e = []
+    for i in args:
+        for j in args:
+            if are_entangled(i, j):
+                e.append(i)
+                e.append(j)
+                del i, j
+    num_entangled = len(e)/2
+    e.append(args)
+    return e, num_entangled
 
 
 q1 = Qubit()
@@ -44,8 +59,11 @@ print(q1.superposition())
 q2 = Qubit()
 q2.H()
 q3 = Qubit()
+print(q3.is_entangled())
 print(CNOT(q2, q3))
+print(are_entangled(q1, q3))
 
+print(system_elements_entangled(q1, q2, q3))
 #print(tensor_product(q1, q2, q3))
 x = []
 for i in range(25):
