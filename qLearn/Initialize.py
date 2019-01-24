@@ -30,5 +30,7 @@ class Initialize(Session):
 
         args = list(args)
         self.system_name = {args[i]: self.system[i] for i in range(len(args))}
+        [self.system[i].set_name(name) for i, name in enumerate(args)]
+
 
 

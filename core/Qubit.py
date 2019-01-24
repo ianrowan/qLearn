@@ -6,7 +6,12 @@ class Qubit:
     def __init__(self):
         self.position = np.asarray([[1.0],
                                     [0.0]])
+        self.name = ""
         self.entangled_with = 0
+        self.entangled_position = 0
+
+    def set_name(self, name):
+        self.name = name
 
     def measure(self):
 
@@ -21,8 +26,9 @@ class Qubit:
     def superposition(self):
         return self.position
 
-    def entangle(self, q):
-        self.entangled_with = q
+    def entangle(self, q, pos):
+        self.entangled_with = id(q)
+        self.entangled_position = pos
 
     def X(self):
         gate = np.asarray([[0, 1],

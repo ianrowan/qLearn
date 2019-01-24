@@ -40,6 +40,7 @@ def tensor_product(*args):
     except AttributeError:
         raise(ValueError("Argument types must be 'core.Qubit' or List('core.Qubit')"))
 
+
 def CNOT(q1, q2):
     gate = np.asarray([[1, 0, 0, 0],
                        [0, 1, 0, 0],
@@ -47,8 +48,8 @@ def CNOT(q1, q2):
                        [0, 0, 1, 0]])
     q_system = tensor_product_simple(q1, q2)
 
-    q1.entangled_with = id(q2)
-    q2.entangled_with = id(q1)
+    q1.entangle(q2, 1)
+    q2.entangle(q1, 2)
 
     return np.matmul(gate, q_system)
 
@@ -66,8 +67,8 @@ def system_elements_entangled(*args):
         for i in args:
             for j in args:
                 if are_entangled(i, j):
-                    e.append(i)
-                    e.append(j)
+                    e.append(i if i.entangled_position < j.entangled_position else j)
+                    e.append(i if i.entangled_position > j.entangled_position else j)
                     args.pop(args.index(i))
                     args.pop(args.index(j))
         num_entangled = len(e)/2
@@ -86,33 +87,45 @@ def controlled_measure(q1, *args):
         for q in args:
             if are_entangled(q1, q) and (np.argmax(CNOT(q1, q)) > 1):
                 q.X()
+                q.entangled_with = 0
+                q1.entangled_with = 0
                 break
         return q1.measure()
     except AttributeError:
         raise(ValueError("Argument types must be 'core.Qubit' or List('core.Qubit')"))
 
 
+def enumerate_names(*args):
+    if type(args[0]) == list:
+        args = args[0]
+    args = list(args)
+    product = []
+    args = system_elements_entangled(args)[0]
+    nums = [format(i, "0{}b".format(len(args))) for i in range(int(math.pow(2, len(args))))]
+    for i, num in enumerate(nums):
+        product.append([''.join([args[k].name for k in range(len(num)) if num[k] == "1"])])
+    return product
+
 '''
-tensor_product_simple(1,2)
+#tensor_product_simple(1,2)
 Q1 = Qubit()
 Q1.H()
 Q1.Ry(.22)
 #print(q1.superposition())
 Q2 = Qubit()
-Q2.X()
+#Q2.X()
 Q3 = Qubit()
 Q4 = Qubit()
 Q4.H()
 Q5 = Qubit()
 Q4.X()
 #print(tensor_product_simple(q2, q3))
-CNOT(Q2, Q3)
+CNOT(Q3, Q4)
 CNOT(Q1, Q2)
-#print(tensor_product(Q1, Q2, Q3, Q4, Q5))
-
-print(controlled_measure(Q1, [Q1, Q2, Q3, Q4]))
-print(Q2.measure())
-
+print(tensor_product(Q1, Q3, Q4, Q2, Q5))
+#print(controlled_measure(Q1, [Q1, Q2, Q3, Q4]))
+#print(Q2.measure())
+print(tensor_product([Q4, Q2]))
 x = []
 for i in range(25):
     q = Qubit()
@@ -122,5 +135,9 @@ for i in range(25):
     x.append(q)
 print(tensor_product(x))
 '''
+
+
+
+
 
 

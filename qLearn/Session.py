@@ -1,9 +1,9 @@
 from qLearn.Initialize import Initialize
-from core.MultiOps import tensor_product, controlled_measure
+from core.MultiOps import tensor_product, controlled_measure, enumerate_names
 import math
 
 
-class Session:
+class Session(object):
 
     def __init__(self, limit_spin=False):
         self.system = []
@@ -38,12 +38,15 @@ class Session:
             return controlled_measure(self.system_name[name], self.system)
         return controlled_measure(self.system[num], self.system)
 
-    def system_state(self):
-        return tensor_product(self.system)
+    def system_state(self, include_names=False):
+        if not include_names:
+            return tensor_product(self.system)
 
-    def measure_system(self):
+        return tensor_product(self.system), enumerate_names(self.system)
+
+    def measure_system(self, include_names=False):
         for q in self.system:
             controlled_measure(q, self.system)
-        return tensor_product(self.system)
-
-
+        if not include_names:
+            return tensor_product(self.system)
+        return tensor_product(self.system), enumerate_names(self.system)
