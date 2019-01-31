@@ -1,6 +1,8 @@
 import numpy as np
 import math
+import operator
 from core.Qubit import Qubit
+import time
 
 
 def tensor_product_simple(q1, q2):
@@ -106,14 +108,60 @@ def enumerate_names(*args):
         product.append([''.join([args[k].name for k in range(len(num)) if num[k] == "1"])])
     return product
 
+
+def binary_tensor(*args):
+    if type(args[0]) == list:
+        args = args[0]
+    args = list(args)
+    enum = [format(i, "0{}b".format(len(args))) for i in range(int(math.pow(2, len(args))))]
+    prod = np.zeros(shape=[int(math.pow(2,len(args))), 1])
+    for i, b in enumerate(enum):
+        prod[i] = np.prod([args[k].superposition()[int(bb)] for k, bb in enumerate(b)])
+    return prod
+
+
+def vector_tensor(*args):
+    if type(args[0]) == list:
+        args = args[0]
+    args = list(args)
+    identity = np.repeat([np.identity(2)], int(math.pow(2, len(args))), axis=0)
+
+    def single_prod(l1, l2):
+        s = identity[:len(l1)]
+        delta = np.reshape(list(map(operator.mul, s, l1)), newshape=[int(len(l1))*2, 2])
+        return np.matmul(delta, l2)
+    prod = np.zeros(shape=[int(math.pow(2, len(args))), 1])
+    for q in range(0, len(args)):
+        prod[:int(math.pow(2, q+1))] = single_prod(prod[:int(math.pow(2, q))], args[q].superposition()) \
+            if q > 0 else args[q].superposition()
+    return prod
+
+
 '''
-#tensor_product_simple(1,2)
 Q1 = Qubit()
 Q1.H()
 Q1.Ry(.22)
+
+#Q1.Ry(.22)
 #print(q1.superposition())
 Q2 = Qubit()
+Q2.H()
+Q2.Ry(-.3)
+print(vector_tensor(Q1, Q2))
+print(tensor_product(Q1, Q2))
+
+Q3 = Qubit()
+Q3.H()
+print(Q1.superposition())
+print(Q2.superposition())
+print(vector_tensor(Q1, Q2))
+
+print(binary_tensor(Q1, Q2))
+
+print(tensor_product(Q1, Q2))
+
 #Q2.X()
+
 Q3 = Qubit()
 Q4 = Qubit()
 Q4.H()
@@ -126,6 +174,7 @@ print(tensor_product(Q1, Q3, Q4, Q2, Q5))
 #print(controlled_measure(Q1, [Q1, Q2, Q3, Q4]))
 #print(Q2.measure())
 print(tensor_product([Q4, Q2]))
+
 x = []
 for i in range(25):
     q = Qubit()
@@ -133,8 +182,13 @@ for i in range(25):
         q.X()
     q.H()
     x.append(q)
-print(tensor_product(x))
+print("Load complete")
+start = time.time()
+print(vector_tensor(x))
+print(time.time() - start)
 '''
+
+
 
 
 
