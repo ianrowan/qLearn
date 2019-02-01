@@ -6,6 +6,12 @@ import time
 
 
 def tensor_product_simple(q1, q2):
+    """
+    Simple element-wise tensor product
+    :param q1: Qubit Type Object
+    :param q2: Qubit Type Object
+    :return: [4 x 1] system state vector
+    """
     try:
         return np.asarray([i*j for i in q1.superposition() for j in q2.superposition()])
     except AttributeError:
@@ -13,7 +19,12 @@ def tensor_product_simple(q1, q2):
 
 
 def tensor_product(*args):
-
+    """
+    Find tensor product or state of a system of any length.
+    Applies entanglement operation if any
+    :param args: A set or list of n Qubit objects
+    :return: [2^n x 1] system state vector
+    """
     if type(args[0]) == list:
         args = args[0]
     args = list(args)
@@ -44,6 +55,12 @@ def tensor_product(*args):
 
 
 def CNOT(q1, q2):
+    """
+    Applies CNOT Gate to two Qubits and creates entanglement
+    :param q1: Qubit Type Obejct
+    :param q2: Qubit Type Object
+    :return: [4 X 1] system state
+    """
     gate = np.asarray([[1, 0, 0, 0],
                        [0, 1, 0, 0],
                        [0, 0, 0, 1],
@@ -57,10 +74,22 @@ def CNOT(q1, q2):
 
 
 def are_entangled(q1, q2):
+    """
+    Check for entanglement betwee ntwo Qubits
+    :param q1: Qubit Type Object
+    :param q2: Qubit Type Object
+    :return: boolean absed on entanlgement
+    """
     return q1.is_entangled() == id(q2)
 
 
 def system_elements_entangled(*args):
+    """
+    Checks for all entangled pairs in a system of n Qubits
+    Re organizes to list
+    :param args: A set or list of n Qubit objects
+    :return: List of ordered Qubits, number of entangled pairs
+    """
     if type(args[0]) == list:
         args = args[0]
     args = list(args)
@@ -81,6 +110,13 @@ def system_elements_entangled(*args):
 
 
 def controlled_measure(q1, *args):
+    """
+    Measures given Qubit and checks system for entangled pairs which are effected
+    by the measure operation
+    :param q1: Qubit Type Object
+    :param args: A set or list of n Qubit objects
+    :return:
+    """
     if type(args[0]) == list:
         args = args[0]
     args = list(args)
@@ -98,6 +134,11 @@ def controlled_measure(q1, *args):
 
 
 def enumerate_names(*args):
+    """
+    Creates ordered list of each sytem state combination by Qubit Name Property
+    :param args: A set or list of n Qubit objects
+    :return:
+    """
     if type(args[0]) == list:
         args = args[0]
     args = list(args)
@@ -110,6 +151,11 @@ def enumerate_names(*args):
 
 
 def binary_tensor(*args):
+    """
+    Alternate Approach to Tensor Product, utilizes binary count to enumerate states
+    :param args: A set or list of n Qubit objects
+    :return:
+    """
     if type(args[0]) == list:
         args = args[0]
     args = list(args)
@@ -121,6 +167,12 @@ def binary_tensor(*args):
 
 
 def vector_tensor(*args):
+    """
+    Tensor product in vector form.
+    Implemented for an efficient alternative in large systems
+    :param args: A set or list of n Qubit objects
+    :return:
+    """
     if type(args[0]) == list:
         args = args[0]
     args = list(args)
