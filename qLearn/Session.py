@@ -1,6 +1,7 @@
 from qLearn.Initialize import Initialize
 from core.MultiOps import tensor_product, controlled_measure, enumerate_names
 import math
+import numpy as np
 
 
 class Session(object):
@@ -96,3 +97,17 @@ class Session(object):
         if not include_names:
             return tensor_product(self.system)
         return tensor_product(self.system), enumerate_names(self.system)
+
+    def single_state_value(self, *args):
+        """
+        Finds the custom state probability of passed inidices
+        :param args: indexes of Qubits in desired state
+        :return: Single probability of the desired state
+        """
+        if type(args[0]) == list:
+            args = args[0]
+        args = list(args)
+        key = np.zeros([len(self.system)])
+        for i in args:
+            key[i] += 1
+        return tensor_product(self.system)[int("".join(key), 2)]
