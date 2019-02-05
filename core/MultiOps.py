@@ -182,8 +182,21 @@ def vector_tensor(*args):
         s = identity[:len(l1)]
         delta = np.reshape(list(map(operator.mul, s, l1)), newshape=[int(len(l1))*2, 2])
         return np.matmul(delta, l2)
+
+    start = 0
     prod = np.zeros(shape=[int(math.pow(2, len(args))), 1])
-    for q in range(0, len(args)):
+
+    entangled = system_elements_entangled(args)
+    if entangled[1] > 0:
+        systems = [CNOT(entangled[0][n*2], entangled[0][n*2 + 1])for n in range(int(entangled[1]))]
+        quad_id = np.repeat([np.identity(4)], (int(math.pow(4, (int(entangled[1])-1) * 2))))
+        for p in range(len(systems)):
+            prod[:int(math.pow(4, p + 1))] = np.matmul(np.reshape(list(map(operator.mul, quad_id[:int(math.pow(4, p))],
+                                                                           prod[:int(math.pow(4, p))])),
+                                                                  newshape=[int(math.pow(4, p)), 4]), systems[p]) if p > 0 else systems[0]
+        start = int(math.pow(4, entangled[1]))
+
+    for q in range(start, len(args)):
         prod[:int(math.pow(2, q+1))] = single_prod(prod[:int(math.pow(2, q))], args[q].superposition()) \
             if q > 0 else args[q].superposition()
     return prod
